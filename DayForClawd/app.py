@@ -220,8 +220,6 @@ def inject_css():
     [data-testid="stDecoration"] {{ display: none !important; }}
     /* ===== RPG 对话框容器 ===== */
     [data-testid="stMainBlockContainer"] > div {{
-        display: flex;
-        flex-direction: column-reverse;
         background: rgba(12, 12, 22, 0.97);
         border: 2px solid rgba(196, 149, 106, 0.2);
         border-radius: 16px;
@@ -1231,20 +1229,19 @@ def main():
     current = st.session_state.scene
     if current in SCENES:
         SCENES[current]()
-       # 每次点击后自动滚到页面底部
-    import streamlit.components.v1 as components
-    components.html("""
-    <script>
-        setTimeout(function() {
-            try {
-                window.parent.scrollTo(0, window.parent.document.body.scrollHeight);
-            } catch(e) {}
-            try {
-                var m = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
-                if (m) m.scrollTo(0, m.scrollHeight);
-            } catch(e) {}
-        }, 200);
-    </script>
-    """, height=0)
+               import streamlit.components.v1 as components
+        components.html("""
+        <script>
+            setTimeout(function() {
+                try {
+                    window.parent.document.body.scrollTo(0, window.parent.document.body.scrollHeight);
+                } catch(e) {}
+                try {
+                    var m = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
+                    if (m) m.scrollTo(0, m.scrollHeight);
+                } catch(e) {}
+            }, 200);
+        </script>
+        """, height=0)
 if __name__ == "__main__":
     main()
