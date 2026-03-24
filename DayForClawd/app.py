@@ -1229,7 +1229,7 @@ def main():
     current = st.session_state.scene
     if current in SCENES:
         SCENES[current]()
-               import streamlit.components.v1 as components
+        import streamlit.components.v1 as components
         components.html("""
         <script>
             setTimeout(function() {
@@ -1245,3 +1245,4 @@ def main():
         """, height=0)
 if __name__ == "__main__":
     main()
+
