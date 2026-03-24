@@ -1229,12 +1229,19 @@ def main():
     current = st.session_state.scene
     if current in SCENES:
         SCENES[current]()
-    # 每次点击后自动滚到页面底部
+       # 每次点击后自动滚到页面底部
     import streamlit.components.v1 as components
     components.html("""
     <script>
-        const main = window.parent.document.querySelector('section.main');
-        if (main) main.scrollTo({top: main.scrollHeight, behavior: 'smooth'});
+        setTimeout(function() {
+            try {
+                window.parent.scrollTo(0, window.parent.document.body.scrollHeight);
+            } catch(e) {}
+            try {
+                var m = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
+                if (m) m.scrollTo(0, m.scrollHeight);
+            } catch(e) {}
+        }, 200);
     </script>
     """, height=0)
 if __name__ == "__main__":
