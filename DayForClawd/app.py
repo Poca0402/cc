@@ -146,24 +146,27 @@ def clawd_say(*texts):
     </div>''', unsafe_allow_html=True)
 
 def get_player_avatar_html():
-    # 8x8 pixel art: black hair, black eyes, skin tone face
-    return '''<svg class="player-avatar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="36" height="36">
-        <rect x="2" y="0" width="4" height="1" fill="#1a1a2e"/>
-        <rect x="1" y="1" width="6" height="2" fill="#1a1a2e"/>
-        <rect x="1" y="3" width="6" height="1" fill="#f0d0b0"/>
-        <rect x="1" y="4" width="1" height="1" fill="#f0d0b0"/>
-        <rect x="2" y="4" width="1" height="1" fill="#1a1a2e"/>
-        <rect x="3" y="4" width="2" height="1" fill="#f0d0b0"/>
-        <rect x="5" y="4" width="1" height="1" fill="#1a1a2e"/>
-        <rect x="6" y="4" width="1" height="1" fill="#f0d0b0"/>
-        <rect x="1" y="5" width="6" height="1" fill="#f0d0b0"/>
-        <rect x="2" y="6" width="4" height="1" fill="#f0d0b0"/>
-        <rect x="3" y="6" width="2" height="1" fill="#d4877a"/>
-        <rect x="3" y="7" width="2" height="1" fill="#f0d0b0"/>
-    </svg>'''
+    b64 = load_image_b64("assets/usericon.png")
+    if b64:
+        return f'<img src="data:image/png;base64,{b64}" class="player-avatar">'
+    return '<div class="clawd-avatar-fallback">?</div>'
 
 def player_say(text):
     name = st.session_state.get("player_name", "你") or "你"
+    idx = st.session_state.get("_ps_idx", 0)
+    st.session_state._ps_idx = idx + 1
+    scene = st.session_state.get("scene", "")
+    state_key = f"spoken_{scene}_{idx}"
+
+    if not st.session_state.get(state_key):
+        st.markdown('<div class="advance-hint">▸</div>',
+                    unsafe_allow_html=True)
+        if st.button("▸", key=f"ps_btn_{scene}_{idx}",
+                      use_container_width=True):
+            st.session_state[state_key] = True
+            st.rerun()
+        st.stop()
+
     avatar = get_player_avatar_html()
     st.markdown(f'''<div class="player-box">
         {avatar}
@@ -226,6 +229,12 @@ def inject_dialog_header():
         "ending_b": "结局 · 种的姿势",
         "ending_c": "结局 · 不走了",
         "epilogue": "尾声",
+    }
+    title = names.get(scene, "")
+    st.markdown(f'''<div class="rpg-chrome">
+        <span class="chrome-title">{title}</span>
+    </div>''', unsafe_allow_html=True)
+
     }
     title = names.get(scene, "")
     st.markdown(f'''<div class="rpg-chrome">
@@ -1313,10 +1322,20 @@ SCENES = {
 
 def main():
     init_state()
+    st.session_state._ps_idx = 0
+
+    # 进入新场景时清除该场景的对话状态
+    current = st.session_state.scene
+    prev = st.session_state.get("_prev_scene", "")
+    if current != prev:
+        for k in list(st.session_state.keys()):
+            if k.startswith(f"spoken_{current}_"):
+                del st.session_state[k]
+        st.session_state._prev_scene = current
+
     inject_css()
     inject_dialog_header()
     inject_scene_bg()
-    current = st.session_state.scene
     if current in SCENES:
         SCENES[current]()
         import streamlit.components.v1 as components
