@@ -11,7 +11,13 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="collapsed",
 )
-
+st.markdown("""
+<style>
+    .stMainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    [data-testid="stToolbar"] {display: none;}
+</style>
+""", unsafe_allow_html=True)
 # ============================================================
 # 状态初始化
 # ============================================================
