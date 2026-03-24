@@ -1229,6 +1229,13 @@ def main():
     current = st.session_state.scene
     if current in SCENES:
         SCENES[current]()
-
+    # 每次点击后自动滚到页面底部
+    import streamlit.components.v1 as components
+    components.html("""
+    <script>
+        const main = window.parent.document.querySelector('section.main');
+        if (main) main.scrollTo({top: main.scrollHeight, behavior: 'smooth'});
+    </script>
+    """, height=0)
 if __name__ == "__main__":
     main()
