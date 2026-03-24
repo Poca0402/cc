@@ -1230,20 +1230,23 @@ def main():
     if current in SCENES:
         SCENES[current]()
         import streamlit.components.v1 as components
-        components.html("""
+        import time
+        components.html(f"""
         <script>
-            setTimeout(function() {
-                try {
+            // {time.time()}
+            setTimeout(function() {{
+                try {{
                     window.parent.document.body.scrollTo(0, 0);
-                } catch(e) {}
-                try {
+                }} catch(e) {{}}
+                try {{
                     var m = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
                     if (m) m.scrollTo(0, 0);
-                } catch(e) {}
-            }, 200);
+                }} catch(e) {{}}
+            }}, 200);
         </script>
         """, height=0)
 if __name__ == "__main__":
     main()
+
 
 
