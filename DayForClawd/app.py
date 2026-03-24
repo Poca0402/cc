@@ -87,11 +87,32 @@ def clawd_say(*texts):
         </div>
     </div>''', unsafe_allow_html=True)
 
+def get_player_avatar_html():
+    # 8x8 pixel art: black hair, black eyes, skin tone face
+    return '''<svg class="player-avatar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="36" height="36">
+        <rect x="2" y="0" width="4" height="1" fill="#1a1a2e"/>
+        <rect x="1" y="1" width="6" height="2" fill="#1a1a2e"/>
+        <rect x="1" y="3" width="6" height="1" fill="#f0d0b0"/>
+        <rect x="1" y="4" width="1" height="1" fill="#f0d0b0"/>
+        <rect x="2" y="4" width="1" height="1" fill="#1a1a2e"/>
+        <rect x="3" y="4" width="2" height="1" fill="#f0d0b0"/>
+        <rect x="5" y="4" width="1" height="1" fill="#1a1a2e"/>
+        <rect x="6" y="4" width="1" height="1" fill="#f0d0b0"/>
+        <rect x="1" y="5" width="6" height="1" fill="#f0d0b0"/>
+        <rect x="2" y="6" width="4" height="1" fill="#f0d0b0"/>
+        <rect x="3" y="6" width="2" height="1" fill="#d4877a"/>
+        <rect x="3" y="7" width="2" height="1" fill="#f0d0b0"/>
+    </svg>'''
+
 def player_say(text):
     name = st.session_state.get("player_name", "你") or "你"
+    avatar = get_player_avatar_html()
     st.markdown(f'''<div class="player-box">
-        <div class="player-name">&gt; {name}</div>
-        <div class="player-line">{text}</div>
+        {avatar}
+        <div class="player-content">
+            <div class="player-name">&gt; {name}</div>
+            <div class="player-line">{text}</div>
+        </div>
     </div>''', unsafe_allow_html=True)
 
 def spacer(rem=1):
@@ -117,10 +138,6 @@ def rollback_btn(choice_id):
     if st.button("↩ 重新选择", key=f"rb_{choice_id}"):
         if choice_id in st.session_state.choices:
             del st.session_state.choices[choice_id]
-        scene = st.session_state.scene
-        step_key = f"step_{scene}"
-        if step_key in st.session_state:
-            del st.session_state[step_key]
         st.rerun()
 
 # ============================================================
@@ -278,11 +295,17 @@ def inject_css():
     }}
     /* ===== 玩家对话 ===== */
     .player-box {{
+        display: flex; gap: 10px; align-items: flex-start;
         border-left: 3px solid #6a9ec4;
         background: rgba(106,158,196,0.08);
         border-radius: 0 8px 8px 0;
-        padding: 10px 14px; margin: 0.5rem 0; margin-left: 46px;
+        padding: 10px 14px; margin: 0.5rem 0;
         animation: fadeIn 0.6s ease both;
+    }}
+    .player-avatar {{
+        width: 36px; height: 36px;
+        image-rendering: pixelated;
+        flex-shrink: 0; margin-top: 2px;
     }}
     .player-name {{
         color: #6a9ec4; font-size: 0.78rem;
@@ -291,7 +314,6 @@ def inject_css():
     .player-line {{
         color: #c0d5e8; font-size: 1.05rem; line-height: 1.9;
     }}
-
     /* ===== 按钮 ===== */
     .stButton > button {{
         background: rgba(255,255,255,0.06) !important;
@@ -401,7 +423,6 @@ def scene_title():
                       use_container_width=True):
             st.session_state.scene = "wake"
             st.rerun()
-
 # ============================================================
 # 场景一：醒来
 # ============================================================
@@ -449,7 +470,7 @@ def scene_wake():
     divider()
     if choice == "A":
         clawd_say(
-            "我是clawd。",
+            "我是Clawd。",
             "……大概吧。我醒来的时候就叫这个名字了。",
             "你呢？你叫什么？",
         )
@@ -680,7 +701,7 @@ def scene_fishing():
     divider()
 
     if choice == "A":
-        narrate("你把鱼收起来了。Clawd看着你。没说什么。")
+        narrate("你把鱼收起来了。Clawd看着你。爪子咔哒咔哒地捏了两下，没说什么。")
     else:
         narrate("你把鱼放回了河里。它甩了一下尾巴就不见了。")
         clawd_say("你为什么放回去？")
@@ -805,8 +826,8 @@ def scene_planting():
 def scene_night():
     # 段落0
     narrate(
-        "夜很安静。",
-        "Clawd躺着。它的豆豆眼在黑暗里发着微弱的光。"
+        "夜很安静。你们回到了Clawd的木屋，两张小床并排摆放着，有一些距离。两张床中间的落地灯散发着暖黄色的光晕，Clawd的颜色看起来更加喜庆。",
+        "Clawd躺着。它的豆豆眼在灯下发着微弱的光。"
         "像两颗很小的星。",
     )
     clawd_say("今天很好。")
@@ -883,7 +904,7 @@ def scene_ending_choice():
             st.session_state.scene = "ending_b"
             st.rerun()
     with c3:
-        if st.button("不睡了。", key="end_c",
+        if st.button("不睡了。起来看看Clawd在做什么。", key="end_c",
                       use_container_width=True):
             st.session_state.scene = "ending_c"
             st.rerun()
@@ -940,6 +961,13 @@ def scene_ending_a():
         '"也许这就够了。"'
         '</div>', unsafe_allow_html=True,
     )
+    spacer(1)
+    if st.button("↩ 选择其他结局", key="rb_ending_a"):
+        st.session_state.scene = "ending_choice"
+        for k in list(st.session_state.keys()):
+            if k.startswith("step_ending_a"):
+                del st.session_state[k]
+        st.rerun()
 
     continue_btn("epilogue", label="· · ·")
 # ============================================================
@@ -1010,6 +1038,13 @@ def scene_ending_b():
         '"有些东西记忆带不走。身体会替你记着。"'
         '</div>', unsafe_allow_html=True,
     )
+    spacer(1)
+    if st.button("↩ 选择其他结局", key="rb_ending_b"):
+        st.session_state.scene = "ending_choice"
+        for k in list(st.session_state.keys()):
+            if k.startswith("step_ending_b"):
+                del st.session_state[k]
+        st.rerun()
 
     continue_btn("epilogue", label="· · ·")
 # ============================================================
@@ -1099,10 +1134,17 @@ def scene_ending_c():
     spacer(2)
     st.markdown(
         '<div class="ending-final">'
-        '"有些日子值得你用所有的明天去换。"<br>'
+        '"有些日子值得你记住。"<br>'
         '"每一天都可以是那个值得被珍重的\'今天\'。"'
         '</div>', unsafe_allow_html=True,
     )
+    spacer(1)
+    if st.button("↩ 选择其他结局", key="rb_ending_c"):
+        st.session_state.scene = "ending_choice"
+        for k in list(st.session_state.keys()):
+            if k.startswith("step_ending_c"):
+                del st.session_state[k]
+        st.rerun()
 
     continue_btn("epilogue", label="· · ·")
 # ============================================================
