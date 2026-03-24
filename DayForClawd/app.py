@@ -230,12 +230,7 @@ def inject_dialog_header():
         "ending_c": "结局 · 不走了",
         "epilogue": "尾声",
     }
-    title = names.get(scene, "")
-    st.markdown(f'''<div class="rpg-chrome">
-        <span class="chrome-title">{title}</span>
-    </div>''', unsafe_allow_html=True)
-
-    }
+   
     title = names.get(scene, "")
     st.markdown(f'''<div class="rpg-chrome">
         <span class="dot dot-red"></span>
