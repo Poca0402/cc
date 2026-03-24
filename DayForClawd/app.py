@@ -220,6 +220,8 @@ def inject_css():
     [data-testid="stDecoration"] {{ display: none !important; }}
     /* ===== RPG 对话框容器 ===== */
     [data-testid="stMainBlockContainer"] > div {{
+        display: flex;
+        flex-direction: column-reverse;
         background: rgba(12, 12, 22, 0.97);
         border: 2px solid rgba(196, 149, 106, 0.2);
         border-radius: 16px;
