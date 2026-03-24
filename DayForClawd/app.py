@@ -51,9 +51,12 @@ def check_step(scene, step):
 # ============================================================
 # 图片加载
 # ============================================================
+BASE_DIR = Path(__file__).parent
+
 @st.cache_data
 def load_image_b64(path: str) -> str:
-    p = Path(path)
+    p = BASE_DIR / path
+
     if p.exists():
         return base64.b64encode(p.read_bytes()).decode()
     return ""
