@@ -1235,14 +1235,19 @@ def main():
         <script>
             // {time.time()}
             setTimeout(function() {{
-                try {{
-                    window.parent.document.body.scrollTo(0, 0);
-                }} catch(e) {{}}
-                try {{
-                    var m = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
-                    if (m) m.scrollTo(0, 0);
-                }} catch(e) {{}}
-            }}, 200);
+                var doc = window.parent.document;
+                window.parent.scrollTo(0, doc.body.scrollHeight);
+                doc.documentElement.scrollTo(0, doc.body.scrollHeight);
+                var containers = [
+                    doc.querySelector('[data-testid="stAppViewContainer"]'),
+                    doc.querySelector('[data-testid="stMainBlockContainer"]'),
+                    doc.querySelector('section.main'),
+                    doc.querySelector('[data-testid="stVerticalBlock"]')
+                ];
+                for (var i = 0; i < containers.length; i++) {{
+                    if (containers[i]) containers[i].scrollTo(0, containers[i].scrollHeight);
+                }}
+            }}, 300);
         </script>
         """, height=0)
 if __name__ == "__main__":
