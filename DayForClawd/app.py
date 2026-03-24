@@ -233,9 +233,6 @@ def inject_dialog_header():
    
     title = names.get(scene, "")
     st.markdown(f'''<div class="rpg-chrome">
-        <span class="dot dot-red"></span>
-        <span class="dot dot-yellow"></span>
-        <span class="dot dot-green"></span>
         <span class="chrome-title">{title}</span>
     </div>''', unsafe_allow_html=True)
 
