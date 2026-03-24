@@ -1234,15 +1234,16 @@ def main():
         <script>
             setTimeout(function() {
                 try {
-                    window.parent.document.body.scrollTo(0, window.parent.document.body.scrollHeight);
+                    window.parent.document.body.scrollTo(0, 0);
                 } catch(e) {}
                 try {
                     var m = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
-                    if (m) m.scrollTo(0, m.scrollHeight);
+                    if (m) m.scrollTo(0, 0);
                 } catch(e) {}
             }, 200);
         </script>
         """, height=0)
 if __name__ == "__main__":
     main()
+
 
